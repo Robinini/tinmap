@@ -22,7 +22,7 @@ import {MapPointer} from 'tinmap/pointer';
 
 ## How it works
 
-
+Create a Tinmap object...
 
 ## Development status (as of Jan 2024)
 

@@ -3,16 +3,21 @@
  */
 
 
-import BaseObject from 'ol/Object';
-
-import {TinShift, sliceIntoChunks} from '../../tinshift/tinshift'  // ToDO - proper package link please
-import {Source} from './source';
-import {Target} from './target';
 import Delaunator from 'delaunator';
+import BaseObject from 'ol/Object';
+import {TinShift, sliceIntoChunks} from '../../../tinshift/tinshift'  // ToDO - proper package link please
+
+import {Space} from './space';
+
 
 // ToDo: Future: Origin fallback to SendMessage on child window. 
 // ToDO: Future: Orientation and Scale vectors along triangle edges to allow user to create eg: a 15 min. walk ellipse.
 // ToDo: Future: Examples including https://commons.wikimedia.org/wiki/Category:Satellite_pictures_of_the_Alps#/media/File:Alpine_arc_(49262991813).jpg
+
+class Tinmaps extends BaseObject {
+
+  
+}
 
 
 class Tinmap extends BaseObject{
@@ -30,11 +35,11 @@ class Tinmap extends BaseObject{
     options = options ? options : {};
 
     this.source = // ToDo: Implement. What if undefined? First layer look for id?
-      options.source !== undefined ? options.source : new Source();
+      options.source !== undefined ? options.source : new Space();
   
     
     this.target = // ToDo: Implement. What if undefined? Any HTML thing with same id?
-      options.target !== undefined ? options.target : new Target();   
+      options.target !== undefined ? options.target : new Space();   
 
     this.source.on("change", this.create_transformer.bind(this));
     this.source.pointer.on("change", this.move_marker.bind(this));
@@ -67,7 +72,7 @@ class Tinmap extends BaseObject{
     const delaunay = Delaunator.from(coords_array);
 
     const tinshift_config = { name: "tinshift", 
-                            input_crs: null, // ToDo
+                            input_crs: null, // ToDo?
                             fallback_strategy: this.source.fallback_strategy,
                             transformed_components: [ "horizontal" ],
                             vertices_columns: [ "source_x", "source_y", "target_x", "target_y" ],
@@ -79,19 +84,39 @@ class Tinmap extends BaseObject{
     this.changed();
   }
   move_marker(){
-    if (this.source.pointer.coordinate === null){
+
+    const target_coords = this.transformer.forward(this.source.pointer.coordinate);
+
+    if (this.target_coords === null || (this.target.limit_bounds && !in_bounds(target_coords, this.target.container))){
       // Hide Pointer
       console.debug('Pointer out of frame');
-      this.target.marker.move(this.source.pointer.coordinate);
+      this.target.marker.move(null);
     } else {
       // Move and show pointer
-      console.debug('Moving coords');
-      this.target.marker.move(this.transformer.forward(this.source.pointer.coordinate));
+      console.debug('Moving marker coords');
+      this.target.marker.move(target_coords);
     }
     this.changed();
   }
   
 }
   
+function in_bounds(coordinate, container){
 
+  if (coordinate === null || coordinate === undefined) return false;
+
+  if (!container instanceof HTMLElement && !container instanceof Element) return true;
+
+  const boundingClientRect = container.getBoundingClientRect();
+
+  if (coordinate[0] < boundingClientRect['left'] || coordinate[0] > boundingClientRect['right'] 
+      || coordinate[1] < boundingClientRect['top'] || coordinate[1] > boundingClientRect['bottom']) {
+    console.debug('Coordinates out of bounds of HTML Element');
+        return false;
+  }
+
+  return true;
+  
+
+}
 export {Tinmap};

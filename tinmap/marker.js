@@ -5,8 +5,6 @@
 import BaseObject from 'ol/Object';
 
 
-// ToDO: Constrain marker Position/Visibility to within container
-
 function create_target(target){  // {HTMLElement|string} [target] The Element or id of the Element
     
     if (typeof target === 'string' || target instanceof String) target = document.getElementById(target);
