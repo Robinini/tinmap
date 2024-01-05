@@ -1,0 +1,1 @@
+// For future use. Don't forget to change the "main" entry in packages.json if you use this

@@ -1,7 +1,12 @@
 {
   "name": "ol-tinmap",
   "version": "0.1.0",
-  "description": "OpenLayers extension to ol.Map pointer or Geolocation position to a marker in other elements using TIN grids",
+  "description": "OpenLayers extension to ol.Map, adding pointer or Geolocation position and displaxing position marker in other elements using TIN grids",
+  "keywords": [
+    "map",
+    "mapping",
+    "openlayers"
+  ],
   "main": "tinmap.js",
   "scripts": {
     "test": ""

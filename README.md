@@ -3,10 +3,10 @@
 
 ## Installation
 
-This package is [hosted on npm](https://www.npmjs.com/package/tinmap) so you can install it with npm
+This package is [hosted on npm](https://www.npmjs.com/package/ol-tinmap) so you can install it with npm
 
 ```
-npm i tinmap
+npm i ol-tinmap
 ```
 
 ## Use
