@@ -15,21 +15,25 @@ class DomSpace extends Space{
 
         // Obtain starting container to look within. If nothing provided - use whole document
         this.container = 
-            options.container !== undefined ? document.getElementById(options.container) : document;
+          options.container !== undefined ? document.getElementById(options.container) : document;
+
+        // Initiate vertex info
+        this.update_vertices();
 
         // Set up change event on source, triggered by vector layer change
-        window.addEventListener('resize', this.changed.bind(this));  // window.onresize
+        window.addEventListener('resize', this.update_vertices.bind(this));  // window.onresize
     }
     
-    get_coords(){ 
+    update_vertices(){ 
       let coords = {}; 
 
       const elements = this.container.querySelectorAll('[id]');
 
       elements.forEach((e) => {coords[e.id] = this.get_element_coords(e);});
       console.debug(Object.keys(coords).length + ' schema points found in HTML DOM Element');
-  
-      return coords;
+
+      this.vertices = coords;
+      this.changed();
     }
   
     get_element_coords(element){

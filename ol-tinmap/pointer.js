@@ -28,6 +28,7 @@ class BroadcastMessenger extends Messenger { // ToDo
     super(options);
     options = options ? options : {};
 
+
     // Connection to a broadcast channel
     this.bc = new BroadcastChannel(options.channel_name !== undefined ? options.channel_name : 'tinmap');
 
@@ -75,15 +76,15 @@ class MapPointer extends Pointer {
         options = options ? options : {};
 
         this.map =
-         options.map !== undefined ? options.map : new olMap();
+        options.map !== undefined ? options.map : new olMap();
 
-        this.clear_marker_outside =
-         options.clear_marker_outside !== undefined ? options.clear_marker_outside : true;
+        this.limit_bounds =
+          options.limit_bounds !== undefined ? options.limit_bounds : true;
 
         // Add update coords event. If leving map - set coords to null
         const bf = this.update_coords.bind(this);
         this.map.on(['pointermove', 'click'], function (evt) {bf(evt.coordinate)});
-        if(this.clear_marker_outside){
+        if(this.limit_bounds){
           this.map.getViewport().addEventListener('mouseout', (evt)=>{bf(null)});
         }
     }

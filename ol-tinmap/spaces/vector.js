@@ -18,12 +18,15 @@ class VectorSpace extends Space {
   
       this.id_att =
         options.id_att !== undefined ? options.id_att : null;
+
+      // Initiate vertex info
+      this.update_vertices();
   
       // Set up change event on source, triggered by vector layer change
-      this.source.on('change', this.changed.bind(this));
+      this.source.on('change', this.update_vertices.bind(this));
     }
-  
-    get_coords(){
+
+    update_vertices(){
       let coords = {};
       const att = this.id_att;
       this.source.forEachFeature(function (feature) {
@@ -31,7 +34,9 @@ class VectorSpace extends Space {
         coords[feature.get(att)] = feature.getGeometry().getCoordinates();
       });
       console.debug(Object.keys(coords).length + ' schema points found in Open layers Vector Layer');
-      return coords;
+
+      this.vertices = coords;
+      this.changed();
     }
   
   }

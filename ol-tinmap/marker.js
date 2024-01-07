@@ -54,10 +54,10 @@ class Marker extends BaseObject{
     this.target.style.visibility = 'hidden';
     
     this.x_offset = // offset to use when positioning the marker element. Will be subtracted from target coords. If not provided, calculated from width/2
-    options.x_offset !== undefined ? options.x_offset : this.target.getBoundingClientRect()['width']/2;
+      options.x_offset !== undefined ? options.x_offset : this.target.getBoundingClientRect()['width']/2;
         
     this.y_offset = // offset to use when positioning the marker element. Will be subtracted from target coords. If not provided, calculated from height/2
-    options.y_offset !== undefined ? options.y_offset : this.target.getBoundingClientRect()['height']/2;
+      options.y_offset !== undefined ? options.y_offset : this.target.getBoundingClientRect()['height']/2;
 
     this.coordinate = null;
 

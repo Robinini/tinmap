@@ -16,23 +16,30 @@ class Space extends BaseObject{
     constructor(options) {
       super();
       options = options ? options : {};
+
+      this.vertices = {};
       
       this.fallback_strategy = // null, "nearest_side" or "nearest_centroid"
         options.fallback_strategy !== undefined ? options.fallback_strategy : 'nearest_side';
   
       this.pointer =
-        options.pointer !== undefined ? options.pointer : new GeolocationPointer();
+      options.pointer !== undefined ? options.pointer : new GeolocationPointer();
 
-      this.marker = new Marker({target: options.marker});  // ToDO - allow string/DOM Element or actual Marker object 
+      this.marker = new Marker({target: options.marker});  // ToDO - allow string/DOM Element or actual Marker object
+
+      this.mark_self = 
+        options.mark_self !== undefined ? options.mark_self : false;
 
       this.limit_bounds = 
-          options.limit_bounds !== undefined ? options.limit_bounds : true;
+        options.limit_bounds !== undefined ? options.limit_bounds : true;
   
     }
-    get_coords(){
-      return {};
+    update_vertices(){
+
     }
-  
+    get_vertices(){
+      return this.vertices;
+    }
   }
 
   export {Space};

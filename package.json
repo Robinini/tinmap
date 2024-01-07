@@ -7,7 +7,7 @@
     "mapping",
     "openlayers"
   ],
-  "main": "tinmap.js",
+  "main": "./ol-tinmap/tinmap.js",
   "scripts": {
     "test": ""
   },
@@ -15,6 +15,7 @@
   "license": "BSD 2-clause",
   "dependencies": {
     "delaunator": "^5.0.0",
-    "ol": "^8.2.0"
+    "ol": "^8.2.0",
+    "tinshift": "^0.1.1"
   }
 }
