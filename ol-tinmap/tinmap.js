@@ -14,6 +14,16 @@ import {Space} from './space';
 // ToDO: Future: Orientation and Scale vectors along triangle edges to allow user to create eg: a 15 min. walk ellipse.
 // ToDo: Future: Examples including https://commons.wikimedia.org/wiki/Category:Satellite_pictures_of_the_Alps#/media/File:Alpine_arc_(49262991813).jpg
 
+
+/**
+ * @classdesc
+ * Tinmap mapping object. Will attempt to create mapping 'pairs' between any number of Spaces which should share some vertex (ids).
+ * Space will be used as a source if it has a pointer.
+ * Space will be used as a target if it has a marker.
+ * Space will be paired to itself if it has a pointer and a marker and the option 'mark_self' is true.
+ *
+ * @api
+ */
 class Tinmap extends BaseObject {
 /**
    * @param {Options} [options] Tinmap options.
@@ -39,7 +49,7 @@ class Tinmap extends BaseObject {
     // Loop through possible pair combinations and add if missing
     for (const source_space in this.spaces_) {
       for (const target_space in this.spaces_) {
-        if (!this.pair_exists(this.spaces_[source_space], this.spaces_[target_space]) 
+        if (!this.pair_exists_(this.spaces_[source_space], this.spaces_[target_space]) 
             && (this.spaces_[source_space] !== this.spaces_[target_space] || this.spaces_[source_space].mark_self)
             && this.spaces_[source_space].pointer && this.spaces_[target_space].marker){
           console.debug('Adding new pair');
@@ -49,27 +59,33 @@ class Tinmap extends BaseObject {
     }
   }
   remove_space(space){
-
     // Remove from spaces_
-    const index = this.spaces_.indexOf(5);
+    const index = this.spaces_.indexOf(space);
     if (index > -1) { // only splice array when item is found
       console.log('Removing space');
       this.spaces_.splice(index, 1);
       // Remove relevant pairs
-      for (const i of this.pair_indices(space).reverse()) {
+      for (const i of this.pair_indices_(space).reverse()) {
+        this.pairs_[i].deconstruct();
         this.pairs_.splice(i, 1);
       }
     }
   }
-  pair_indices(space){
+  pair_indices_(space){
     const indices = [];
-    for (i in this.pairs_){
+    for (const i in this.pairs_){
       if (this.pairs_[i].source === space || this.pairs_[i].target === space) indices.push(i);;
     }
-    return this.pair_indices;  // in ascending order
+    console.log('Found ' + indices.length + ' pairs (to remove)');
+    return indices;  // in ascending order
   }
-  
-  pair_exists(source, target){
+  /**
+   * 
+   * @param {Space} source - 
+   * @param {Space} target 
+   * @returns 
+   */
+  pair_exists_(source, target){
     for (const pair in this.pairs_) {
       if (this.pairs_[pair].source === source && this.pairs_[pair].target === target) {
         console.debug('Pair found in pairs, no need to add');
@@ -96,16 +112,34 @@ class TinmapPair extends BaseObject{
     this.source = // ToDo: Implement. What if undefined? First layer look for id?
       options.source !== undefined ? options.source : new Space();
   
-    
     this.target = // ToDo: Implement. What if undefined? Any HTML thing with same id?
       options.target !== undefined ? options.target : new Space();   
 
-    this.source.on("change", this.create_transformer.bind(this));
-    this.source.pointer.on("change", this.move_marker.bind(this));
-    this.target.on("change", this.create_transformer.bind(this));
+    this.events_ = [];
+    this.add_event(this.source, "change", this.create_transformer.bind(this));    
+    this.add_event(this.source.pointer, "change", this.move_marker.bind(this));
+    this.add_event(this.target, "change", this.create_transformer.bind(this));
 
     this.transformer = null;
     this.create_transformer();
+  }
+
+  add_event(target, event, handler){
+    this.events_.push([target, event, handler]);
+    target.on(event, handler);
+  }
+
+  deconstruct(){
+    // Hide marker
+    this.target.marker.move(null);
+
+    // Remove all registered events
+    for (const i in this.events_){
+      const target = this.events_[i][0];
+      const event = this.events_[i][1];
+      const handler = this.events_[i][2];
+      target.un(event, handler);
+    }
   }
 
   create_transformer(){
@@ -160,12 +194,18 @@ class TinmapPair extends BaseObject{
   }
   
 }
-  
-function in_bounds(coordinate, container){
 
+/**
+ * 
+ * @param {Object[]} coordinate - Coordinte to check if within container
+ * @param {HTMLElement} container - Container HTML Element
+ * @returns Tru
+ */
+function in_bounds(coordinate, container){
+  
   if (coordinate === null || coordinate === undefined) return false;
 
-  if (!container instanceof HTMLElement && !container instanceof Element) return true;
+  if (container === null || container === undefined || (!container instanceof HTMLElement && !container instanceof Element)) return true;
 
   const boundingClientRect = container.getBoundingClientRect();
 

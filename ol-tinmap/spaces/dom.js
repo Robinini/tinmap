@@ -13,10 +13,6 @@ class DomSpace extends Space{
         super(options);
         options = options ? options : {};
 
-        // Obtain starting container to look within. If nothing provided - use whole document
-        this.container = 
-          options.container !== undefined ? document.getElementById(options.container) : document;
-
         // Initiate vertex info
         this.update_vertices();
 
