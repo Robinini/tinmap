@@ -7,7 +7,7 @@
     "mapping",
     "openlayers"
   ],
-  "main": "./ol-tinmap/tinmap.js",
+  "main": "./ol-tinmap/index.js",
   "scripts": {
     "test": ""
   },

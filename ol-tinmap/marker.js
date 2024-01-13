@@ -1,47 +1,45 @@
 /**
- * @module tinmap/marker
+ * @module ol-tinmap/marker
  */
 
 import BaseObject from 'ol/Object';
-
-
-function create_target(target){  // {HTMLElement|string} [target] The Element or id of the Element
-    
-    if (typeof target === 'string' || target instanceof String) target = document.getElementById(target);
-    if (target instanceof HTMLElement) return target;
-
-    // Undefined or not found - create new, default version
-    target = document.createElement('div');
-    target.className = 'marker';
-    target.style.zIndex = '10';
-    target.style.color='blue';
-    target.style.width = '12';
-    target.style.height = '12';
-    target.style.position = 'absolute';
-    target.style.display = 'inline-block';
-
-    document.body.appendChild(target); 
-
-    /*
-    const svg = document.createElement('svg');
-    svg.setAttribute('width', '12');
-    svg.setAttribute('height', '12');
-    target.appendChild(svg);
-
-    const circle = document.createElement('circle');
-    circle.setAttribute('r', '6');
-    circle.setAttribute('cy', '6');
-    circle.setAttribute('cx', '6');
-    circle.setAttribute('style', 'stroke:none; stroke-width:0px; fill:red')
-    svg.appendChild(circle);   
-    */
-
-    target.innerHTML = '<svg width="12" height="12"><circle cx="6" cy="6" r="6" style="stroke:none; stroke-width:0px; fill:red"/></svg>';
-    return target;
-}
+import {set_messenger } from './messenger';
 
 
 class Marker extends BaseObject{
+  /**
+   * Base Marker object (shows position of a given coordinate)
+   */
+  constructor(options) {
+    super();
+    options = options ? options : {};
+    
+    this.messengers_ = set_messenger(options.messengers);
+
+    this.coordinate = null;
+
+    this.matrix = undefined;  // ToDO future - matrix used to convert pointer to marker coordinates including scale, rotate etc
+
+  }
+  move(coordinate){
+    this.coordinate = coordinate;
+    if (this.coordinate === null){
+      console.debug('Hiding marker');
+    } else {
+      console.debug('Moving marker to ' + this.coordinate[0] + ' ' + this.coordinate[1]);
+    }
+    
+    this.changed();
+
+    for (const key in this.messengers_){  // Broadcast coordinate using messengers
+      this.messengers_[key].send(this.coordinate);
+    }
+  }
+
+}
+
+
+class DomMarker extends BaseObject{
   /**
    * Schema Marker object (shows position of marker)
    */
@@ -77,8 +75,47 @@ class Marker extends BaseObject{
     }
     
     this.changed();
+
+    for (const key in this.messengers_){  // Broadcast coordinate using messengers
+      this.messengers_[key].send(this.coordinate);
+    }
   }
 
 }
 
-export {Marker};
+function create_target(target){  // {HTMLElement|string} [target] The Element or id of the Element
+    
+  if (typeof target === 'string' || target instanceof String) target = document.getElementById(target);
+  if (target instanceof HTMLElement) return target;
+
+  // Undefined or not found - create new, default version
+  target = document.createElement('div');
+  target.className = 'marker';
+  target.style.zIndex = '10';
+  target.style.color='blue';
+  target.style.width = '12';
+  target.style.height = '12';
+  target.style.position = 'absolute';
+  target.style.display = 'inline-block';
+
+  document.body.appendChild(target); 
+
+  /*
+  const svg = document.createElement('svg');
+  svg.setAttribute('width', '12');
+  svg.setAttribute('height', '12');
+  target.appendChild(svg);
+
+  const circle = document.createElement('circle');
+  circle.setAttribute('r', '6');
+  circle.setAttribute('cy', '6');
+  circle.setAttribute('cx', '6');
+  circle.setAttribute('style', 'stroke:none; stroke-width:0px; fill:red')
+  svg.appendChild(circle);   
+  */
+
+  target.innerHTML = '<svg width="12" height="12"><circle cx="6" cy="6" r="6" style="stroke:none; stroke-width:0px; fill:red"/></svg>';
+  return target;
+}
+
+export {Marker, DomMarker};

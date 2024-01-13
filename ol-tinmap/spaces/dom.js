@@ -1,5 +1,5 @@
 /**
- * @module tinmap/spaces/dom
+ * @module ol-tinmap/spaces/dom
  */
 
 import {Space} from './space';
@@ -36,6 +36,24 @@ class DomSpace extends Space{
       const rect = element.getBoundingClientRect();
       return [rect['x'] + rect['width']/2, rect['y'] + rect['height']/2];
     }
+
+    in_bounds(coordinate, container){
+
+      if (coordinate === null || coordinate === undefined) return false;
+
+      if (this.container === null || this.container === undefined || (!this.container instanceof HTMLElement && !this.container instanceof Element)) return true;
+
+      const boundingClientRect = this.container.getBoundingClientRect();
+
+      if (coordinate[0] < boundingClientRect['left'] || coordinate[0] > boundingClientRect['right'] 
+        || coordinate[1] < boundingClientRect['top'] || coordinate[1] > boundingClientRect['bottom']) {
+      console.debug('Coordinates out of bounds of HTML Element');
+          return false;
+      }
+
+      return true;
+    }
+
 
   }
 

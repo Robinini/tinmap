@@ -1,5 +1,5 @@
 /**
- * @module tinmap/tinmap
+ * @module ol-tinmap/tinmap
  */
 
 
@@ -7,7 +7,7 @@ import Delaunator from 'delaunator';
 import BaseObject from 'ol/Object';
 import {TinShift, sliceIntoChunks} from '../../../tinshift/tinshift'  // ToDO - proper package link please
 
-import {Space} from './space';
+import {Space} from './spaces/space';
 
 
 // ToDo: Future: Origin fallback to SendMessage on child window. 
@@ -179,44 +179,24 @@ class TinmapPair extends BaseObject{
   }
   move_marker(){
 
-    const target_vertices = this.transformer.forward(this.source.pointer.coordinate);
+    // Calculate target coordinates fro current coodinates
+    // NB: If the source is the same as the target -  target_coords = this.source.pointer.coordinate
+    const target_coords = this.source === this.target ? this.source.pointer.coordinate: this.transformer.forward(this.source.pointer.coordinate);
 
-    if (this.target_vertices === null || (this.target.limit_bounds && !in_bounds(target_vertices, this.target.container))){
+    if (target_coords === null || (this.target.limit_bounds && !this.target.in_bounds(target_coords))){
       // Hide Pointer
       console.debug('Pointer out of frame');
       this.target.marker.move(null);
     } else {
       // Move and show pointer
       console.debug('Moving marker coords');
-      this.target.marker.move(target_vertices);
+      this.target.marker.move(target_coords);
     }
     this.changed();
   }
   
 }
 
-/**
- * 
- * @param {Object[]} coordinate - Coordinte to check if within container
- * @param {HTMLElement} container - Container HTML Element
- * @returns Tru
- */
-function in_bounds(coordinate, container){
-  
-  if (coordinate === null || coordinate === undefined) return false;
 
-  if (container === null || container === undefined || (!container instanceof HTMLElement && !container instanceof Element)) return true;
 
-  const boundingClientRect = container.getBoundingClientRect();
-
-  if (coordinate[0] < boundingClientRect['left'] || coordinate[0] > boundingClientRect['right'] 
-      || coordinate[1] < boundingClientRect['top'] || coordinate[1] > boundingClientRect['bottom']) {
-    console.debug('Coordinates out of bounds of HTML Element');
-        return false;
-  }
-
-  return true;
-  
-
-}
 export {Tinmap, TinmapPair};

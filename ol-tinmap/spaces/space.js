@@ -1,10 +1,10 @@
 /**
- * @module tinmap/spaces/space
+ * @module ol-tinmap/spaces/space
  */
 
 import BaseObject from 'ol/Object';
 
-import {Marker} from '../marker';
+import {Marker, DomMarker} from '../marker';
 import {Pointer, GeolocationPointer} from '../pointer';
 
 
@@ -23,6 +23,7 @@ class Space extends BaseObject{
       this.vertices = {};
 
       // Obtain starting container to look within. If nothing provided - use whole document
+      // ToDO - allow actual element to be provided?
       this.container = 
         options.container !== undefined ? document.getElementById(options.container) : document.documentElement;
       
@@ -32,8 +33,8 @@ class Space extends BaseObject{
       this.pointer =
         options.pointer instanceof Pointer ? options.pointer : new GeolocationPointer();
 
-      this.marker = new Marker({target: options.marker});
-        options.marker instanceof Marker ? options.marker : new Marker({target: options.marker});;
+      this.marker =
+        options.marker instanceof Marker ? options.marker : new DomMarker({target: options.marker});
 
       this.mark_self = 
         options.mark_self !== undefined ? options.mark_self : true;
@@ -47,6 +48,9 @@ class Space extends BaseObject{
     }
     get_vertices(){
       return this.vertices;
+    }
+    in_bounds(coordinate){
+      return true;
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * @module tinmap/spaces/vector
+ * @module ol-tinmap/spaces/vector
  */
 
 import {Space} from './space';
