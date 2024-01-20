@@ -2,7 +2,9 @@
  * @module ol-tinmap/spaces/vector
  */
 
-import {Space} from './space';
+import { Space } from './space';
+import { Marker, MapMarker } from '../marker';
+import { Pointer, MapPointer } from '../pointer';
 
 
 class VectorSpace extends Space {
@@ -12,6 +14,15 @@ class VectorSpace extends Space {
     constructor(options) {
       super(options);
       options = options ? options : {};
+
+
+      // Use provided pointer or if not false, , passing map option which may be an ol Map instance (or undefined)
+      if(options.pointer instanceof Pointer) this.pointer = options.pointer;
+      else if(options.pointer !== false) this.pointer = new MapPointer({map: options.map});
+
+      // Use provided marker or if not false create marker, passing map option which may be an ol Map instance (or undefined)
+      if(options.marker instanceof Marker) this.marker = options.marker;
+      else if(options.marker !== false) this.marker = new MapMarker({target: options.map});
   
       this.source =
         options.source !== undefined ? options.source : null;

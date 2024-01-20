@@ -8,8 +8,6 @@ import {Marker, DomMarker} from '../marker';
 import {Pointer, GeolocationPointer} from '../pointer';
 
 
-// ToDo: default this.pointer, this.marker for each subclass type Vector, OlMap, DOM. Geolocation only as LAST RESORT
-
 
 // Data source for coordinate transform
 class Space extends BaseObject{
@@ -22,19 +20,22 @@ class Space extends BaseObject{
 
       this.vertices = {};
 
-      // Obtain starting container to look within. If nothing provided - use whole document
-      // ToDO - allow actual element to be provided?
-      this.container = 
-        options.container !== undefined ? document.getElementById(options.container) : document.documentElement;
+      // Obtain starting container to look within. Allow actual HTML object orstring ID to search
+      // If nothing provided - use whole document
+      if(options.container instanceof Element) {
+        this.container = options.container;
+      }
+      else if (typeof options.container == 'string' && document.getElementById(options.container)) {
+        this.container = document.getElementById(options.container);
+      }
+      else this.container = document.documentElement;
       
       this.fallback_strategy = // null, "nearest_side" or "nearest_centroid"
         options.fallback_strategy !== undefined ? options.fallback_strategy : 'nearest_side';
   
-      this.pointer =
-        options.pointer instanceof Pointer ? options.pointer : new GeolocationPointer();
+      this.pointer = null;
 
-      this.marker =
-        options.marker instanceof Marker ? options.marker : new DomMarker({target: options.marker});
+      this.marker =null;
 
       this.mark_self = 
         options.mark_self !== undefined ? options.mark_self : true;

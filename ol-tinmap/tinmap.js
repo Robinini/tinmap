@@ -5,7 +5,7 @@
 
 import Delaunator from 'delaunator';
 import BaseObject from 'ol/Object';
-import {TinShift, sliceIntoChunks} from '../../../tinshift/tinshift'  // ToDO - proper package link please
+import {TinShift, sliceIntoChunks} from 'tinshift'
 
 import {Space} from './spaces/space';
 
@@ -109,10 +109,10 @@ class TinmapPair extends BaseObject{
     super();
     options = options ? options : {};
     
-    this.source = // ToDo: Implement. What if undefined? First layer look for id?
+    this.source =
       options.source !== undefined ? options.source : new Space();
   
-    this.target = // ToDo: Implement. What if undefined? Any HTML thing with same id?
+    this.target =
       options.target !== undefined ? options.target : new Space();   
 
     this.events_ = [];
@@ -166,7 +166,7 @@ class TinmapPair extends BaseObject{
     const delaunay = Delaunator.from(coords_array);
 
     const tinshift_config = { name: "tinshift", 
-                            input_crs: null, // ToDo?
+                            input_crs: null, // ToDo: Future?
                             fallback_strategy: this.source.fallback_strategy,
                             transformed_components: [ "horizontal" ],
                             vertices_columns: [ "source_x", "source_y", "target_x", "target_y" ],

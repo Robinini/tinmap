@@ -25,7 +25,7 @@ import { Pointer, DomPointer, MapPointer, GeolocationPointer,
          BroadcasMessengePointer, MqttMessengePointer } from './pointer';
 
 // Markers
-import { Marker } from './marker';
+import { Marker, DomMarker, MapMarker } from './marker';
 
 ////////////////////////////
 // Exports
@@ -36,5 +36,5 @@ export { Space, DomSpace, VectorSpace };
 export { Messenger, BroadcastMessenger, MqttMessenger };
 export { Pointer, DomPointer, MapPointer, GeolocationPointer, 
          BroadcasMessengePointer, MqttMessengePointer };
-export { Marker };
+export { Marker, DomMarker, MapMarker };
 

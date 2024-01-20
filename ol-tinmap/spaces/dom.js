@@ -3,6 +3,8 @@
  */
 
 import {Space} from './space';
+import {Marker, DomMarker} from '../marker';
+import {Pointer, DomPointer} from '../pointer';
 
 
 class DomSpace extends Space{
@@ -10,14 +12,22 @@ class DomSpace extends Space{
    * HTML DOM space
    */
     constructor(options) {
-        super(options);
-        options = options ? options : {};
+      super(options);
+      options = options ? options : {};
 
-        // Initiate vertex info
-        this.update_vertices();
+      // Use provided pointer or if not false, create pointer using the space containing element.
+      if(options.pointer instanceof Pointer) this.pointer = options.pointer;
+      else if(options.pointer !== false) this.pointer = new DomPointer({element: this.container}); 
 
-        // Set up change event on source, triggered by vector layer change
-        window.addEventListener('resize', this.update_vertices.bind(this));  // window.onresize
+      // Use provided marker or if not false create marker, passing marker option which can be a html element or id (string)
+      if(options.marker instanceof Marker) this.marker = options.marker;
+      else if(options.marker !== false) this.marker = new DomMarker({target: options.marker});
+
+      // Initiate vertex info
+      this.update_vertices();
+
+      // Set up change event on source, triggered by vector layer change
+      window.addEventListener('resize', this.update_vertices.bind(this));  // window.onresize
     }
     
     update_vertices(){ 
@@ -41,7 +51,10 @@ class DomSpace extends Space{
 
       if (coordinate === null || coordinate === undefined) return false;
 
-      if (this.container === null || this.container === undefined || (!this.container instanceof HTMLElement && !this.container instanceof Element)) return true;
+      if (this.container === null || 
+          this.container === undefined || 
+          (!this.container instanceof HTMLElement 
+            && !this.container instanceof Element)) return true;
 
       const boundingClientRect = this.container.getBoundingClientRect();
 

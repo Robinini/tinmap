@@ -3,9 +3,12 @@
  */
 
 import BaseObject from 'ol/Object';
-import {Map as olMap} from 'ol';
+import { Map } from 'ol';
 
-import {Messenger, set_messenger } from './messenger';
+import {Messenger, set_messenger } from './messenger';Map
+
+
+
 
 
 // Pointer coordinate source
@@ -18,7 +21,8 @@ class Pointer extends BaseObject {
 
       this.messengers_ = set_messenger(options.messengers);
 
-      this.limit_bounds = false;
+      this.limit_bounds =
+        options.limit_bounds !== undefined ? options.limit_bounds : true;
 
       this.coordinate = null;
     }
@@ -38,16 +42,21 @@ class DomPointer extends Pointer {
       super(options);
       options = options ? options : {};
 
-      // ToDO - element or use text to find element byID
-      this.element = options.element !== undefined ? this.element : document.documentElement;
-
-      this.limit_bounds =
-        options.limit_bounds !== undefined ? options.limit_bounds : true;
-
+      // Obtain html element for user to point. Allow actual HTML object orstring ID to search
+      // If nothing provided - use whole document
+      if(options.element instanceof Element) {
+        this.element = options.element;
+      }
+      else if (typeof options.element == 'string' && document.getElementById(options.element)) {
+        this.element = document.getElementById(options.element);
+      }
+      else this.element = document.documentElement;
+      
       // Add update coords event. If leaving map - set coords to null
       const bf = this.update_coords.bind(this);
 
       // set up and DOM moseovermove event and mouseout
+      // ToDo: Perhaps use offset_X, offset_y which relates to actual DOM coordinate system
       this.element.onmousemove = (evt) => {bf(evt.coordinate)};
       if(this.limit_bounds){
         this.element.onmouseout = (evt)=>{bf(null)};
@@ -61,10 +70,7 @@ class MapPointer extends Pointer {
         options = options ? options : {};
 
         this.map =
-        options.map !== undefined ? options.map : new olMap();
-
-        this.limit_bounds =
-          options.limit_bounds !== undefined ? options.limit_bounds : true;
+          options.map instanceof Map ? options.map : new Map();
 
         // Add update coords event. If leaving map - set coords to null
         const bf = this.update_coords.bind(this);

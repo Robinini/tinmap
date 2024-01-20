@@ -2,17 +2,22 @@
  * @module ol-tinmap/marker
  */
 
+import { Map } from 'ol';
 import BaseObject from 'ol/Object';
-import {set_messenger } from './messenger';
+import { set_messenger } from './messenger';
+
 
 
 class Marker extends BaseObject{
   /**
-   * Base Marker object (shows position of a given coordinate)
+   * Abstract Base Marker object (shows position of a given coordinate)
    */
   constructor(options) {
     super();
     options = options ? options : {};
+
+    this.limit_bounds =
+        options.limit_bounds !== undefined ? options.limit_bounds : true;
     
     this.messengers_ = set_messenger(options.messengers);
 
@@ -39,12 +44,50 @@ class Marker extends BaseObject{
 }
 
 
-class DomMarker extends BaseObject{
+class MapMarker extends Marker {
+  constructor(options){
+      super(options);
+      options = options ? options : {};
+
+      this.map =
+       options.map instanceof Map  ? options.map : new Map();
+
+      /*
+      ToDo:
+      User defined or default (red) point style.
+      var vectorLayer = new ol.layer.Vector({
+          source: new ol.source.Vector({
+            features: [feature]
+          })
+        });
+      this.map.addLayer(vectorLayer);
+
+      Create new point layer on top of all others.
+      Hide/set style transparent 
+      */
+  }
+  move(coodinate){
+
+    /*
+      ToDo:
+      var point = new ol.geom.Point([545377.5290934666, 6867785.761987235]);
+      var feature = new ol.Feature({geometry: point});
+
+      
+      Move/Hide accordingly
+      */
+
+
+  }
+}
+
+
+class DomMarker extends Marker{
   /**
    * Schema Marker object (shows position of marker)
    */
   constructor(options) {
-    super();
+    super(options);
     options = options ? options : {};
     
     this.target = create_target(options.target);
@@ -118,4 +161,4 @@ function create_target(target){  // {HTMLElement|string} [target] The Element or
   return target;
 }
 
-export {Marker, DomMarker};
+export {Marker, DomMarker, MapMarker};
