@@ -183,7 +183,7 @@ class TinmapPair extends BaseObject{
 
     const source_coords = this.source.pointer.coordinate;
 
-    // Calculate target coordinates from current coodinates NB: If the source spave = target space, target_coords = source_coords
+    // Calculate target coordinates from current coordinates NB: If the source spave = target space, target_coords = source_coords
     const target_coords = this.source === this.target ? source_coords: this.transformer.forward(source_coords);
 
     if (source_coords === null || target_coords === null 

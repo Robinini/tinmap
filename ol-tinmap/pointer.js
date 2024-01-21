@@ -28,12 +28,16 @@ class Pointer extends BaseObject {
         console.debug('New pointer coordinate:' + coordinate);
         this.coordinate = coordinate;
         this.changed();
-        for (const key in this.messengers_){  // Broadcast coordinate using messengers
-          this.messengers_[key].send(this.coordinate);
-        }
+        this.broadcast(this.coordinate);
+        
     }
     in_bounds(coordinate, container){
       return true;
+    }
+    broadcast(message){
+      for (const key in this.messengers_){  // Broadcast coordinate using messengers
+        this.messengers_[key].send(message);
+      }
     }
   }
 

@@ -35,7 +35,7 @@ class Space extends BaseObject{
   
       this.pointer = null;
 
-      this.marker =null;
+      this.marker = null;
 
       this.mark_self = 
        typeof(options.mark_self) === 'boolean' ? options.mark_self : true;

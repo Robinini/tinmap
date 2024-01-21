@@ -2,8 +2,15 @@
  * @module ol-tinmap/marker
  */
 
-import { Map } from 'ol';
 import BaseObject from 'ol/Object';
+import { Map } from 'ol';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point.js';
+import { Fill, Stroke, Style, Circle } from 'ol/style';
+
+
 import { set_messenger } from './messenger';
 
 
@@ -35,13 +42,17 @@ class Marker extends BaseObject{
     }
     
     this.changed();
+    this.broadcast(this.coordinate);
 
-    for (const key in this.messengers_){  // Broadcast coordinate using messengers
-      this.messengers_[key].send(this.coordinate);
-    }
   }
   in_bounds(coordinate, container){
     return true;
+  }
+  broadcast(message){
+    // Broadcast coordinate using messengers
+    for (const key in this.messengers_){  // Broadcast coordinate using messengers
+      this.messengers_[key].send(message);
+    }
   }
 }
 
@@ -52,33 +63,46 @@ class MapMarker extends Marker {
       options = options ? options : {};
 
       this.map =
-       options.map instanceof Map  ? options.map : new Map();
+        options.map instanceof Map ? options.map : new Map();
+      
+      // Create new point layer on top of all others.
+      // User defined or default (red) point style.
+      
+      const marker_style = new Style({
+        image: new Circle({
+          radius: 7,
+          fill: new Fill({color: 'red'}),
+          stroke: false
+        })
+      });
 
-      /*
-      ToDo:
-      User defined or default (red) point style.
-      var vectorLayer = new ol.layer.Vector({
-          source: new ol.source.Vector({
-            features: [feature]
-          })
+      console.log(marker_style);
+
+      // To: Do - make same coord sys as VectorSpace
+      this.marker_feature = new Feature();
+      this.marker_feature.setStyle(marker_style);
+      this.marker_source = new VectorSource({
+        features: [this.marker_feature]
+      });
+      const marker_layer = new VectorLayer({
+          source: this.marker_source
         });
-      this.map.addLayer(vectorLayer);
-
-      Create new point layer on top of all others.
-      Hide/set style transparent 
+      this.map.addLayer(marker_layer);
+      /*
+      
       */
   }
-  move(coodinate){
-
-    /*
-      ToDo:
-      var point = new ol.geom.Point([545377.5290934666, 6867785.761987235]);
-      var feature = new ol.Feature({geometry: point});
-
-      
-      Move/Hide accordingly
-      */
-
+  move(coordinate){
+    this.coordinate = coordinate;
+    if (this.coordinate === null){
+      this.marker_feature.setGeometry();
+      console.debug('Hiding marker (provided coordinate is null)');
+    } else {
+      this.marker_feature.setGeometry(new Point(coordinate));
+      console.debug('Moving Map marker to ' + coordinate);
+    }
+    this.changed();
+    this.broadcast(this.coordinate);
 
   }
   in_bounds(coordinate, container){
@@ -125,10 +149,7 @@ class DomMarker extends Marker{
     }
     
     this.changed();
-
-    for (const key in this.messengers_){  // Broadcast coordinate using messengers
-      this.messengers_[key].send(this.coordinate);
-    }
+    this.broadcast(this.coordinate);
   }
   in_bounds(coordinate, container){
 
@@ -171,7 +192,7 @@ function create_target(target){  // {HTMLElement|string} [target] The Element or
 
   document.body.appendChild(target); 
 
-  /*
+  /*  // Sidn't seem to work creating elements from scatch
   const svg = document.createElement('svg');
   svg.setAttribute('width', '12');
   svg.setAttribute('height', '12');
