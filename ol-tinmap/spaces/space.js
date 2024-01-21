@@ -38,10 +38,7 @@ class Space extends BaseObject{
       this.marker =null;
 
       this.mark_self = 
-        options.mark_self !== undefined ? options.mark_self : true;
-
-      this.limit_bounds = 
-        options.limit_bounds !== undefined ? options.limit_bounds : true;
+       typeof(options.mark_self) === 'boolean' ? options.mark_self : true;
   
     }
     update_vertices(){
@@ -49,9 +46,6 @@ class Space extends BaseObject{
     }
     get_vertices(){
       return this.vertices;
-    }
-    in_bounds(coordinate){
-      return true;
     }
   }
 

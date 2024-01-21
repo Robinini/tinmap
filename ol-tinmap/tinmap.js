@@ -179,17 +179,22 @@ class TinmapPair extends BaseObject{
   }
   move_marker(){
 
-    // Calculate target coordinates fro current coodinates
-    // NB: If the source is the same as the target -  target_coords = this.source.pointer.coordinate
-    const target_coords = this.source === this.target ? this.source.pointer.coordinate: this.transformer.forward(this.source.pointer.coordinate);
+    if(!this.target.marker) return;
 
-    if (target_coords === null || (this.target.limit_bounds && !this.target.in_bounds(target_coords))){
-      // Hide Pointer
-      console.debug('Pointer out of frame');
+    const source_coords = this.source.pointer.coordinate;
+
+    // Calculate target coordinates from current coodinates NB: If the source spave = target space, target_coords = source_coords
+    const target_coords = this.source === this.target ? source_coords: this.transformer.forward(source_coords);
+
+    if (source_coords === null || target_coords === null 
+       || (this.source.pointer && this.source.pointer.limit_bounds && !this.source.pointer.in_bounds(source_coords, this.source.container)) 
+       || (this.target.marker && this.target.marker.limit_bounds && !this.target.marker.in_bounds(target_coords, this.target.container))){
+      // Hide marker
+      console.debug('Pointer coords null or out of source/target bounds');
       this.target.marker.move(null);
     } else {
-      // Move and show pointer
-      console.debug('Moving marker coords');
+      // Move and show marker
+      console.debug('Moving marker coords to ' + target_coords);
       this.target.marker.move(target_coords);
     }
     this.changed();

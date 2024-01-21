@@ -9,8 +9,6 @@ import {Messenger, set_messenger } from './messenger';Map
 
 
 
-
-
 // Pointer coordinate source
 // ToDo: Map != Source coordinate system remember. May need to transform Map > Source Coordsys
 
@@ -22,7 +20,7 @@ class Pointer extends BaseObject {
       this.messengers_ = set_messenger(options.messengers);
 
       this.limit_bounds =
-        options.limit_bounds !== undefined ? options.limit_bounds : true;
+        typeof(options.limit_bounds) === 'boolean'? options.limit_bounds : true;
 
       this.coordinate = null;
     }
@@ -33,6 +31,9 @@ class Pointer extends BaseObject {
         for (const key in this.messengers_){  // Broadcast coordinate using messengers
           this.messengers_[key].send(this.coordinate);
         }
+    }
+    in_bounds(coordinate, container){
+      return true;
     }
   }
 
@@ -56,8 +57,8 @@ class DomPointer extends Pointer {
       const bf = this.update_coords.bind(this);
 
       // set up and DOM moseovermove event and mouseout
-      // ToDo: Perhaps use offset_X, offset_y which relates to actual DOM coordinate system
-      this.element.onmousemove = (evt) => {bf(evt.coordinate)};
+      // (offset_X, offset_y relate to actual elemet coordinate system)
+      this.element.onmousemove = (evt) => {bf([evt.clientX, evt.clientY])};
       if(this.limit_bounds){
         this.element.onmouseout = (evt)=>{bf(null)};
       }

@@ -17,7 +17,7 @@ class Marker extends BaseObject{
     options = options ? options : {};
 
     this.limit_bounds =
-        options.limit_bounds !== undefined ? options.limit_bounds : true;
+      typeof(options.limit_bounds) === 'boolean'? options.limit_bounds : true;
     
     this.messengers_ = set_messenger(options.messengers);
 
@@ -40,7 +40,9 @@ class Marker extends BaseObject{
       this.messengers_[key].send(this.coordinate);
     }
   }
-
+  in_bounds(coordinate, container){
+    return true;
+  }
 }
 
 
@@ -79,6 +81,11 @@ class MapMarker extends Marker {
 
 
   }
+  in_bounds(coordinate, container){
+
+    // ToDo
+    return true;
+  }
 }
 
 
@@ -109,7 +116,7 @@ class DomMarker extends Marker{
     this.coordinate = coordinate;
     if (this.coordinate === null){
       this.target.style.visibility = 'hidden';
-      console.debug('Hiding marker (pointer out of range)');
+      console.debug('Hiding marker (provided coordinate is null)');
     } else {
       this.target.style.visibility = 'visible';
       this.target.style.left = String(this.coordinate[0] - this.x_offset) + 'px';
@@ -123,8 +130,29 @@ class DomMarker extends Marker{
       this.messengers_[key].send(this.coordinate);
     }
   }
+  in_bounds(coordinate, container){
+
+
+    if (coordinate === null || coordinate === undefined) return false;
+
+    if (container === null || 
+        container === undefined || 
+        (!container instanceof HTMLElement 
+          && !container instanceof Element)) return true;
+
+    const boundingClientRect = container.getBoundingClientRect();
+
+    if (coordinate[0] < boundingClientRect['left'] || coordinate[0] > boundingClientRect['right'] 
+      || coordinate[1] < boundingClientRect['top'] || coordinate[1] > boundingClientRect['bottom']) {
+    console.debug('Coordinates out of bounds of HTML Element');
+        return false;
+    }
+
+    return true;
+  }
 
 }
+
 
 function create_target(target){  // {HTMLElement|string} [target] The Element or id of the Element
     
