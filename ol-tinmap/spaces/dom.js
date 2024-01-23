@@ -15,6 +15,8 @@ class DomSpace extends Space{
       super(options);
       options = options ? options : {};
 
+      this.name = 'DomSpace';  // To help with debugging
+
       // Use provided pointer or if not false, create pointer using the space containing element.
       if(options.pointer instanceof Pointer) this.pointer = options.pointer;
       else if(options.pointer !== false) this.pointer = new DomPointer({element: this.container}); 

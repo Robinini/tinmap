@@ -18,6 +18,8 @@ class Space extends BaseObject{
       super();
       options = options ? options : {};
 
+      this.name = 'Space';  // To help with debugging
+      
       this.vertices = {};
 
       // Obtain starting container to look within. Allow actual HTML object orstring ID to search

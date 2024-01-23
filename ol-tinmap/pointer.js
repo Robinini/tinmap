@@ -64,6 +64,7 @@ class DomPointer extends Pointer {
       // (offset_X, offset_y relate to actual elemet coordinate system)
       this.element.onmousemove = (evt) => {bf([evt.clientX, evt.clientY])};
       if(this.limit_bounds){
+        console.log(this.element);
         this.element.onmouseout = (evt)=>{bf(null)};
       }
   }

@@ -70,13 +70,11 @@ class MapMarker extends Marker {
       
       const marker_style = new Style({
         image: new Circle({
-          radius: 7,
+          radius: 6,
           fill: new Fill({color: 'red'}),
           stroke: false
         })
       });
-
-      console.log(marker_style);
 
       // To: Do - make same coord sys as VectorSpace
       this.marker_feature = new Feature();
@@ -122,6 +120,7 @@ class DomMarker extends Marker{
     options = options ? options : {};
     
     this.target = create_target(options.target);
+    this.target.style.pointerEvents = "none";  // This prevents the mouseout event being triggered on an underlying pointer element when the pointer is above the marker eg: when self_mark is true. This is undesirable (results in flickering)
     this.target.display = 'block';  // In case user element has display:none. When none, element size can not be calculated
     this.target.style.visibility = 'hidden';
     

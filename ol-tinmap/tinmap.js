@@ -181,25 +181,31 @@ class TinmapPair extends BaseObject{
 
     if(!this.target.marker) return;
 
-    const source_coords = this.source.pointer.coordinate;
+    const source_coords = this.source.pointer.coordinate;    
+    let target_coords = null;
 
-    // Calculate target coordinates from current coordinates NB: If the source spave = target space, target_coords = source_coords
-    const target_coords = this.source === this.target ? source_coords: this.transformer.forward(source_coords);
-
-    if (source_coords === null || target_coords === null 
-       || (this.source.pointer && this.source.pointer.limit_bounds && !this.source.pointer.in_bounds(source_coords, this.source.container)) 
-       || (this.target.marker && this.target.marker.limit_bounds && !this.target.marker.in_bounds(target_coords, this.target.container))){
-      // Hide marker
-      console.debug('Pointer coords null or out of source/target bounds');
-      this.target.marker.move(null);
-    } else {
-      // Move and show marker
-      console.debug('Moving marker coords to ' + target_coords);
-      this.target.marker.move(target_coords);
+    if (source_coords === null) {
+      console.log('Source (' + this.source.name + ') coordinate is null');
     }
+    else if (this.source.pointer && this.source.pointer.limit_bounds && !this.source.pointer.in_bounds(source_coords, this.source.container)) {
+      console.log('Source (' + this.source.name + ') out of bounds');
+    } else {
+      // Calculate target coordinates from current coordinates NB: If the source spave = target space, target_coords = source_coords
+      target_coords = this.source === this.target ? source_coords: this.transformer.forward(source_coords);
+    }
+
+    if (target_coords === null) {
+      console.log('Target (' + this.target.name + ') coordinate is null');
+    }
+    else if (this.target.marker && this.target.marker.limit_bounds && !this.target.marker.in_bounds(target_coords, this.target.container)){
+      console.log('Source (' + this.source.name + ') out of bounds');
+      target_coords = null;  // Hide marker
+    }
+    // Move and show marker
+    console.debug('Moving marker coords to ' + target_coords);
+    this.target.marker.move(target_coords);
     this.changed();
   }
-  
 }
 
 
