@@ -37,6 +37,11 @@ class Messenger extends BaseObject { // ToDo
     constructor(options){
       super(options);
       options = options ? options : {};
+
+      // ("broker.hivemq.com", 1883, 60) - WARN USER IF GOES TO DEFAULT
+    }
+    send(message){
+      // publish('ol-tinmap/space.name/', json.dumps([1, 2, 3, i]).encode('utf-8'), 0)
     }
   }
 

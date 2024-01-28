@@ -38,7 +38,7 @@ class DomSpace extends Space{
       const elements = this.container.querySelectorAll('[id]');
 
       elements.forEach((e) => {coords[e.id] = this.get_element_coords(e);});
-      console.debug(Object.keys(coords).length + ' schema points found in HTML DOM Element');
+      console.debug(Object.keys(coords).length + ' schema points found in '  + this.name);
 
       this.vertices = coords;
       this.changed();

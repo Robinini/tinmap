@@ -11,11 +11,14 @@ import {Messenger, set_messenger } from './messenger';Map
 
 // Pointer coordinate source
 // ToDo: Map != Source coordinate system remember. May need to transform Map > Source Coordsys
+// ToDo: Example: Possible to trigger move coords with span onclick(target.marker.move[fix-x,fix-y])?
 
 class Pointer extends BaseObject {
     constructor(options){
       super();
       options = options ? options : {};
+
+      this.name = 'Pointer';  // To help with debugging
 
       this.messengers_ = set_messenger(options.messengers);
 
@@ -25,7 +28,7 @@ class Pointer extends BaseObject {
       this.coordinate = null;
     }
     update_coords(coordinate){
-        console.debug('New pointer coordinate:' + coordinate);
+        console.debug('New ' + this.name + ' pointer coordinate:' + coordinate);
         this.coordinate = coordinate;
         this.changed();
         this.broadcast(this.coordinate);
@@ -47,6 +50,8 @@ class DomPointer extends Pointer {
       super(options);
       options = options ? options : {};
 
+      this.name = 'DomPointer';  // To help with debugging
+
       // Obtain html element for user to point. Allow actual HTML object orstring ID to search
       // If nothing provided - use whole document
       if(options.element instanceof Element) {
@@ -64,7 +69,6 @@ class DomPointer extends Pointer {
       // (offset_X, offset_y relate to actual elemet coordinate system)
       this.element.onmousemove = (evt) => {bf([evt.clientX, evt.clientY])};
       if(this.limit_bounds){
-        console.log(this.element);
         this.element.onmouseout = (evt)=>{bf(null)};
       }
   }
@@ -74,6 +78,8 @@ class MapPointer extends Pointer {
     constructor(options){
         super(options);
         options = options ? options : {};
+
+        this.name = 'MapPointer';  // To help with debugging
 
         this.map =
           options.map instanceof Map ? options.map : new Map();
@@ -91,6 +97,8 @@ class GeolocationPointer extends Pointer {  // ToDo - use ol geolocation trigger
   constructor(options){
       super(options);
       options = options ? options : {};
+
+      this.name = 'GeolocationPointer';  // To help with debugging
   }
 }
 
@@ -99,13 +107,15 @@ class BroadcasMessengePointer extends Pointer { // ToDo - use BroadcasMessenger 
     super(options);
     options = options ? options : {};
 
+    this.name = 'BroadcasMessengePointer';  // To help with debugging
+
     // Connection to a broadcast channel
     this.bc = new BroadcastChannel(options.channel_name !== undefined ? options.channel_name : 'tinmap');
 
     // Add update coords event. If leving map - set coords to null
     const bf = this.update_coords.bind(this);
     this.bc.onmessage = (event) => {
-      console.debug('New BroadcastMessage: ' + event + ' Data:' + event.data);
+      console.debug('New ' + this.name + ' BroadcastMessage: ' + event + ' Data:' + event.data);
       bf(event.data);
     };
   }
@@ -115,6 +125,8 @@ class MqttMessengePointer extends Pointer { // ToDo - use MqttMessenger triggers
   constructor(options){
     super(options);
     options = options ? options : {};
+
+    this.name = 'MqttMessengePointer';  // To help with debugging
   }
 }
 

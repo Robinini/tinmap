@@ -23,7 +23,7 @@ class VectorSpace extends Space {
 
       // Use provided marker or if not false create marker, passing map option which may be an ol Map instance (or undefined)
       if(options.marker instanceof Marker) this.marker = options.marker;
-      else if(options.marker !== false) this.marker = new MapMarker({map: options.map});
+      else if(options.marker !== false) this.marker = new MapMarker({map: options.map, center: options.center, zoom: options.zoom});
 
       this.source =
         options.source !== undefined ? options.source : null;
@@ -45,7 +45,7 @@ class VectorSpace extends Space {
         // ToDo: Connvert to map lat lon or whatever the map is using?
         coords[feature.get(att)] = feature.getGeometry().getCoordinates();
       });
-      console.debug(Object.keys(coords).length + ' schema points found in Open layers Vector Layer');
+      console.debug(Object.keys(coords).length + ' schema points found in ' + this.name);
 
       this.vertices = coords;
       this.changed();

@@ -1,4 +1,4 @@
-/*  ToDo: Future: Allow user to just use an image object
+/*  Future: Allow user to just use an image object
 
 
 class RasterSpace extends Space could get pixel positions of a particular layer - the ids could be saved as an integer values in this layer (ignoring nodata)

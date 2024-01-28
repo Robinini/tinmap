@@ -23,6 +23,8 @@ class Marker extends BaseObject{
     super();
     options = options ? options : {};
 
+    this.name = 'Marker';  // To help with debugging
+
     this.limit_bounds =
       typeof(options.limit_bounds) === 'boolean'? options.limit_bounds : true;
     
@@ -30,7 +32,7 @@ class Marker extends BaseObject{
 
     this.coordinate = null;
 
-    this.matrix = undefined;  // ToDO future - matrix used to convert pointer to marker coordinates including scale, rotate etc
+    this.matrix = undefined;  // future - matrix used to convert pointer to marker coordinates including scale, rotate etc
 
   }
   move(coordinate){
@@ -62,8 +64,18 @@ class MapMarker extends Marker {
       super(options);
       options = options ? options : {};
 
+      this.name = 'MapMarker';  // To help with debugging
+
       this.map =
         options.map instanceof Map ? options.map : new Map();
+
+      // center view on coords
+      this.center = 
+        typeof options.center === 'boolean' ? options.center : false
+      // Zoom to fixed value
+      this.zoom = 
+        options.zoom !== undefined ? options.zoom : null
+
       
       // Create new point layer on top of all others.
       // User defined or default (red) point style.
@@ -98,6 +110,12 @@ class MapMarker extends Marker {
     } else {
       this.marker_feature.setGeometry(new Point(coordinate));
       console.debug('Moving Map marker to ' + coordinate);
+
+      // Center and zoom view
+      // Future: Find out why ths causes crash - likely triggers pointer>marker>pointer.. event infinite cycle?
+      //if (this.center) this.map.getView().setCenter(coordinate);
+      //if (this.zoom) this.map.getView().setZoom(this.zoom);
+
     }
     this.changed();
     this.broadcast(this.coordinate);
@@ -118,6 +136,8 @@ class DomMarker extends Marker{
   constructor(options) {
     super(options);
     options = options ? options : {};
+
+    this.name = 'DomMarker';  // To help with debugging
     
     this.target = create_target(options.target);
     this.target.style.pointerEvents = "none";  // This prevents the mouseout event being triggered on an underlying pointer element when the pointer is above the marker eg: when self_mark is true. This is undesirable (results in flickering)
@@ -132,19 +152,19 @@ class DomMarker extends Marker{
 
     this.coordinate = null;
 
-    this.matrix = undefined;  // ToDO future - matrix used to convert pointer to marker coordinates including scale, rotate etc
+    this.matrix = undefined;  // Future - matrix used to convert pointer to marker coordinates including scale, rotate etc
 
   }
   move(coordinate){
     this.coordinate = coordinate;
     if (this.coordinate === null){
       this.target.style.visibility = 'hidden';
-      console.debug('Hiding marker (provided coordinate is null)');
+      console.debug('Hiding ' + this.name + ' marker (provided coordinate is null)');
     } else {
       this.target.style.visibility = 'visible';
       this.target.style.left = String(this.coordinate[0] - this.x_offset) + 'px';
       this.target.style.top = String(this.coordinate[1] - this.y_offset) + 'px';
-      console.debug('Moving marker to ' + this.target.style.left + ' ' + this.target.style.top);
+      console.debug('Moving ' + this.name + ' marker to ' + this.target.style.left + ' ' + this.target.style.top);
     }
     
     this.changed();
@@ -164,8 +184,8 @@ class DomMarker extends Marker{
 
     if (coordinate[0] < boundingClientRect['left'] || coordinate[0] > boundingClientRect['right'] 
       || coordinate[1] < boundingClientRect['top'] || coordinate[1] > boundingClientRect['bottom']) {
-    console.debug('Coordinates out of bounds of HTML Element');
-        return false;
+      console.debug('Coordinates out of bounds of ' + this.name + ' HTML Element');
+      return false;
     }
 
     return true;
