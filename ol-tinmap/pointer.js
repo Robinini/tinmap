@@ -54,22 +54,26 @@ class DomPointer extends Pointer {
 
       // Obtain html element for user to point. Allow actual HTML object orstring ID to search
       // If nothing provided - use whole document
-      if(options.element instanceof Element) {
-        this.element = options.element;
+      if(options.container instanceof Element) {
+        this.container = options.container;
       }
-      else if (typeof options.element == 'string' && document.getElementById(options.element)) {
-        this.element = document.getElementById(options.element);
+      else if (typeof options.container == 'string' && document.getElementById(options.container)) {
+        this.container = document.getElementById(options.container);
       }
-      else this.element = document.documentElement;
+      else this.container = document.documentElement;
+
       
       // Add update coords event. If leaving map - set coords to null
       const bf = this.update_coords.bind(this);
 
       // set up and DOM moseovermove event and mouseout
       // (offset_X, offset_y relate to actual elemet coordinate system)
-      this.element.onmousemove = (evt) => {bf([evt.clientX, evt.clientY])};
+      this.container.onmousemove = (evt) => {
+        const container_rect = this.container.getBoundingClientRect();
+        bf([evt.clientX -container_rect.left, evt.clientY - container_rect.top])
+      };
       if(this.limit_bounds){
-        this.element.onmouseout = (evt)=>{bf(null)};
+        this.container.onmouseout = (evt)=>{bf(null)};
       }
   }
 }

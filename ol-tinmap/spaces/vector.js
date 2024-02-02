@@ -17,7 +17,7 @@ class VectorSpace extends Space {
 
       this.name = 'VectorSpace';  // To help with debugging
 
-      // Use provided pointer or if not false, , passing map option which may be an ol Map instance (or undefined)
+      // Use provided pointer or if not false, passing map option which may be an ol Map instance (or undefined)
       if(options.pointer instanceof Pointer) this.pointer = options.pointer;
       else if(options.pointer !== false) this.pointer = new MapPointer({map: options.map});
 

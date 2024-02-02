@@ -5,7 +5,7 @@
 import BaseObject from 'ol/Object';
 
 
-// ToDo: Messenger classes can be attached to the Pointer or Marer which will simultaneously publish the pointer coordinate
+// ToDo: Messenger classes can be attached to the Pointer or Marker which will simultaneously publish the pointer coordinate
 
 class Messenger extends BaseObject { // ToDo 
     constructor(options){

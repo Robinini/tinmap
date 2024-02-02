@@ -121,11 +121,6 @@ class MapMarker extends Marker {
     this.broadcast(this.coordinate);
 
   }
-  in_bounds(coordinate, container){
-
-    // ToDo
-    return true;
-  }
 }
 
 
@@ -138,16 +133,25 @@ class DomMarker extends Marker{
     options = options ? options : {};
 
     this.name = 'DomMarker';  // To help with debugging
+
+    // Conntainer is the eleent within which the target can move around within and the coordinates refer to
+    if(options.container instanceof Element) {
+      this.container = options.container;
+    }
+    else if (typeof options.container == 'string' && document.getElementById(options.container)) {
+      this.container = document.getElementById(options.container);
+    }
+    else this.container = document.documentElement;
     
     this.target = create_target(options.target);
     this.target.style.pointerEvents = "none";  // This prevents the mouseout event being triggered on an underlying pointer element when the pointer is above the marker eg: when self_mark is true. This is undesirable (results in flickering)
     this.target.display = 'block';  // In case user element has display:none. When none, element size can not be calculated
     this.target.style.visibility = 'hidden';
     
-    this.x_offset = // offset to use when positioning the marker element. Will be subtracted from target coords. If not provided, calculated from width/2
+    this.x_offset = // offset to use when positioning the marker target element. Will be subtracted from target coords. If not provided, calculated from width/2
       options.x_offset !== undefined ? options.x_offset : this.target.getBoundingClientRect()['width']/2;
         
-    this.y_offset = // offset to use when positioning the marker element. Will be subtracted from target coords. If not provided, calculated from height/2
+    this.y_offset = // offset to use when positioning the marker target element. Will be subtracted from target coords. If not provided, calculated from height/2
       options.y_offset !== undefined ? options.y_offset : this.target.getBoundingClientRect()['height']/2;
 
     this.coordinate = null;
@@ -161,17 +165,18 @@ class DomMarker extends Marker{
       this.target.style.visibility = 'hidden';
       console.debug('Hiding ' + this.name + ' marker (provided coordinate is null)');
     } else {
-      this.target.style.visibility = 'visible';
-      this.target.style.left = String(this.coordinate[0] - this.x_offset) + 'px';
-      this.target.style.top = String(this.coordinate[1] - this.y_offset) + 'px';
+      // (offset_X, offset_y relate to actual elemet coordinate system)
+      const container_rect = this.container.getBoundingClientRect();
+      this.target.style.left = String(this.coordinate[0] + container_rect.left - this.x_offset) + 'px';
+      this.target.style.top = String(this.coordinate[1] + container_rect.top - this.y_offset) + 'px';
       console.debug('Moving ' + this.name + ' marker to ' + this.target.style.left + ' ' + this.target.style.top);
+      this.target.style.visibility = 'visible';
     }
     
     this.changed();
     this.broadcast(this.coordinate);
   }
   in_bounds(coordinate, container){
-
 
     if (coordinate === null || coordinate === undefined) return false;
 
@@ -182,8 +187,11 @@ class DomMarker extends Marker{
 
     const boundingClientRect = container.getBoundingClientRect();
 
-    if (coordinate[0] < boundingClientRect['left'] || coordinate[0] > boundingClientRect['right'] 
-      || coordinate[1] < boundingClientRect['top'] || coordinate[1] > boundingClientRect['bottom']) {
+    const container_width = boundingClientRect['right'] - boundingClientRect['left'];
+    const container_height = boundingClientRect['bottom'] - boundingClientRect['top'];
+
+    if (coordinate[0] < 0 || coordinate[0] > container_width 
+      || coordinate[1] < 0 || coordinate[1] > container_height) {
       console.debug('Coordinates out of bounds of ' + this.name + ' HTML Element');
       return false;
     }

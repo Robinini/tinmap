@@ -19,11 +19,11 @@ class DomSpace extends Space{
 
       // Use provided pointer or if not false, create pointer using the space containing element.
       if(options.pointer instanceof Pointer) this.pointer = options.pointer;
-      else if(options.pointer !== false) this.pointer = new DomPointer({element: this.container}); 
+      else if(options.pointer !== false) this.pointer = new DomPointer({container: this.container}); 
 
       // Use provided marker or if not false create marker, passing marker option which can be a html element or id (string)
       if(options.marker instanceof Marker) this.marker = options.marker;
-      else if(options.marker !== false) this.marker = new DomMarker({target: options.marker});
+      else if(options.marker !== false) this.marker = new DomMarker({container: this.container, target: options.marker});
 
       // Initiate vertex info
       this.update_vertices();
@@ -35,20 +35,23 @@ class DomSpace extends Space{
     update_vertices(){ 
       let coords = {}; 
 
+      const container_rect = this.container.getBoundingClientRect();
       const elements = this.container.querySelectorAll('[id]');
 
-      elements.forEach((e) => {coords[e.id] = this.get_element_coords(e);});
+      elements.forEach((e) => {coords[e.id] = this.get_element_coords(e, container_rect.left, container_rect.top);});
       console.debug(Object.keys(coords).length + ' schema points found in '  + this.name);
 
       this.vertices = coords;
       this.changed();
     }
   
-    get_element_coords(element){
+    get_element_coords(element, base_offset_x=0, base_offset_y=0){
       const rect = element.getBoundingClientRect();
-      return [rect['x'] + rect['width']/2, rect['y'] + rect['height']/2];
+      let el_coords = [rect['x'] + rect['width']/2 - base_offset_x, 
+                       rect['y'] + rect['height']/2 - base_offset_y];
+      return el_coords;
     }
 
   }
 
-export {DomSpace};
+export {DomSpace};// (offset_X, offset_y relate to actual element coordinate system, )
