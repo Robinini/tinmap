@@ -29,6 +29,7 @@ class Space extends BaseObject{
       }
       else if (typeof options.container == 'string' && document.getElementById(options.container)) {
         this.container = document.getElementById(options.container);
+        
       }
       else this.container = document.documentElement;
       

@@ -7,6 +7,12 @@ import {Marker, DomMarker} from '../marker';
 import {Pointer, DomPointer} from '../pointer';
 
 
+/*
+ToDo: Future - allow non-embedded HTML <object> continaing SVGs to be provide. 
+To actually update_vertices, Would need to test if <object>, then access the contained SVG sing getSVGDocument()
+
+*/
+
 class DomSpace extends Space{
     /**
    * HTML DOM space
@@ -54,4 +60,4 @@ class DomSpace extends Space{
 
   }
 
-export {DomSpace};// (offset_X, offset_y relate to actual element coordinate system, )
+export {DomSpace};

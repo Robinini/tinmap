@@ -1,0 +1,16 @@
+@import "node_modules/ol/ol.css";
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+
+
+
+body, html {font-family: 'London Tube', sans-serif;}
+#header {clear:both;}
+#map {width:49%; height: 100vh!important;float:left}
+#svgs svg, #svgs img {position: absolute; max-width:50%}
+svg circle {display: block; fill:none; stroke: none;}
+svg circle.marker {display: block; stroke:none; stroke-width:0px; fill:red}
